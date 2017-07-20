@@ -5,7 +5,8 @@ public class Project {
 		try {
 			File f = new File("AboutMe.java");
 			System.out.println("Compiles: " + TestCase.compile(f));
-			System.out.println("Run Main: " + TestCase.runMain(f, new File("input.txt"), "^.*helooo.*$"));
+			System.out.println("Run Main: " + 
+				TestCase.runMain(f, new File("input.txt"), "^(.|\n)*helooo(.|\n)*$"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

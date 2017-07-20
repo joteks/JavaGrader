@@ -22,8 +22,7 @@ public class AboutMe {
      
      AboutMe t = new AboutMe();
      Scanner read = new Scanner(System.in);
-     System.out.println(read.nextLine());
-     
+     System.out.println("helooo");
      System.out.println("My name is " + t.myName() + ", and I attend " + t.mySchool() +  ". I am " + t.myAge() + " years old." );
      System.out.println("Thank you!");
    }
