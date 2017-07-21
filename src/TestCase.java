@@ -74,6 +74,16 @@ public class TestCase {
 		return false;
 	}
 
+	public static boolean runMain(File submission, String input, String regex) throws Exception {
+		PrintWriter out = new PrintWriter("runmaintemp.txt");
+		out.println(input);
+		File f = new File("runmaintemp.txt");
+		boolean result = runMain(submission, f, regex);
+		f.delete();
+		return result;
+
+	}
+
 	private static String streamError(Process pro) {
 		String error = "";
 		Scanner scan = new Scanner(pro.getErrorStream());
