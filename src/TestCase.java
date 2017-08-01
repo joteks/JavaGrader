@@ -3,6 +3,7 @@ import java.lang.*;
 import java.util.regex.Pattern;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
 
 public class TestCase {
 	private String name;
@@ -63,11 +64,10 @@ public class TestCase {
 			String path = submission.getPath();
 			path = path.substring(0, path.length()-5);
 			String cmd = "java " + path;
-			ProcessBuilder pb = new ProcessBuilder("java", "AboutMe");
+			ProcessBuilder pb = new ProcessBuilder("java", path);
 			pb.redirectInput(input);
 			Process pro = pb.start();
 			pro.waitFor();
-			//String output = streamOutput(pro);
 			String output = "heloooooo\nooo";
 			return output.matches(regex);
 		}
@@ -82,6 +82,120 @@ public class TestCase {
 		f.delete();
 		return result;
 
+	}
+
+	public static File replaceMethod(File submission, File solution, String method) throws Exception {
+		//find index of regex match
+		String submit = removeComments(submission);
+		Pattern pattern = Pattern.compile(method);
+		Matcher matcher = pattern.matcher(submit);
+		if (matcher.find() == false) {
+			return null;
+		}
+		int end = matcher.end();
+
+		//get body of method from submission
+		Stack<Character> stack = new Stack<Character>();
+		stack.push('{');
+		char c;
+		boolean openchar = false;
+		boolean openstring = false;
+		int i = end;
+		String body = "{";
+		while (!stack.empty() && i < submit.length()-1) {
+			i++;
+			c = submit.charAt(i);
+			body += c;
+			if ((c == '{' || c == '}') && !openchar && !openstring) {
+				if (c=='{') {
+					stack.push('{');
+				} else {
+					try {
+						stack.pop();
+					} catch (EmptyStackException e) {
+						return null;
+					}
+				}
+			}
+			if (c == '\'' && !openstring && !openchar) {
+				openchar = true;
+			} else if (c == '\'' && openchar) {
+				openchar = false;
+			} else if (c == '\"' && !openstring && !openchar) {
+				openstring = true;
+			} else if (c == '\"' && openstring) {
+				openstring = false;
+			}
+		}
+
+		//replace body of method from solution
+		String sol = removeComments(solution);
+		matcher = pattern.matcher(sol);
+		if (matcher.find() == false) {
+			return null;
+		}
+		end = matcher.end();
+
+		String result = sol.substring(0, end);
+		result += body;
+
+		stack = new Stack<Character>();
+		stack.push('{');
+
+		openchar = false;
+		openstring = false;
+		i = end;
+		body = "{";
+		while (!stack.empty() && i < submit.length()-1) {
+			i++;
+			c = submit.charAt(i);
+			body += c;
+			if ((c == '{' || c == '}') && !openchar && !openstring) {
+				if (c=='{') {
+					stack.push('{');
+				} else {
+					try {
+						stack.pop();
+					} catch (EmptyStackException e) {
+						return null;
+					}
+				}
+			}
+			if (c == '\'' && !openstring && !openchar) {
+				openchar = true;
+			} else if (c == '\'' && openchar) {
+				openchar = false;
+			} else if (c == '\"' && !openstring && !openchar) {
+				openstring = true;
+			} else if (c == '\"' && openstring) {
+				openstring = false;
+			}
+		}
+
+		result += sol.substring(i + 1);
+		//create directory named temp
+		Random r = new Random();
+		int number = r.nextInt(99999999);
+		File directory = new File("temp" + number);
+		directory.mkdir();
+		File temp = new File("temp" + number + "/" + solution.getName());
+		PrintWriter fw = new PrintWriter(temp);
+		System.out.println(result);
+		fw.write(result);
+		fw.close();
+		return temp;
+	}
+
+	public static boolean matchPattern(File submission, String regex) throws Exception {
+		String file = removeComments(submission);
+		return file.matches(regex);
+	}
+
+	private static String removeComments(File submission) throws Exception {
+		Scanner read = new Scanner(submission);
+		String result = "";
+		while (read.hasNextLine()) { result += read.nextLine() + "\n"; }
+		return CommentParser.removeComments(result);
 	}
 
 	private static String streamError(Process pro) {
