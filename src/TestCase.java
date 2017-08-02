@@ -52,6 +52,31 @@ public class TestCase {
 		this.result=result;
 	}
 
+	public static boolean pushAll(TestCase[] tests) {
+		//Group tests by category
+		ArrayList<String> categories = new ArrayList<String>();
+		ArrayList<Integer> counts = new ArrayList<Integer>();
+		for (TestCase tc : tests) {
+			if (tc.getCategory()==null) return false;
+			String cat = tc.getCategory();
+			if (categories.contains(cat) && tc.getResult()) {
+				int index = categories.indexOf(cat);
+				counts.set(index, counts.get(index) + tc.getValue());
+			} else if (!categories.contains(cat) && tc.getResult()){
+				categories.add(cat);
+				counts.add(tc.getValue());
+			} else if (!categories.contains(cat)){
+				categories.add(cat);
+			}
+		}
+		GradeInfo gi;
+		for (int i = 0; i < categories.size(); i++) {
+			gi = new GradeInfo(categories.get(i), counts.get(i));
+      		g.addGrade(gi);
+		}
+		return false;
+	}
+
 	public static boolean compile(File submission) throws Exception {
 		Process pro = Runtime.getRuntime().exec("javac "+submission.getPath());
 		String error = streamError(pro);
@@ -148,7 +173,7 @@ public class TestCase {
 		body = "{";
 		while (!stack.empty() && i < submit.length()-1) {
 			i++;
-			c = submit.charAt(i);
+			c = sol.charAt(i);
 			body += c;
 			if ((c == '{' || c == '}') && !openchar && !openstring) {
 				if (c=='{') {
@@ -180,7 +205,6 @@ public class TestCase {
 		directory.mkdir();
 		File temp = new File("temp" + number + "/" + solution.getName());
 		PrintWriter fw = new PrintWriter(temp);
-		System.out.println(result);
 		fw.write(result);
 		fw.close();
 		return temp;
@@ -191,11 +215,88 @@ public class TestCase {
 		return file.matches(regex);
 	}
 
+	private static String commentsHelper(String file) {
+		char[] dots = file.toCharArray();
+		boolean openstring = false;
+		boolean openchar = false;
+		boolean comment = false;
+		boolean multicomment = false;
+		int[] remove = new int[dots.length];
+		int count = 0;
+		char prev = '9';
+		for (char d : dots) {
+			if (comment || multicomment) {
+				remove[count] = 1;
+			}
+			if (d == '\'') {
+				if (comment || multicomment) {
+					;
+				} else if (openstring) {
+					;
+				} else if (!openchar) {
+					openchar = true;
+				} else if (prev != '\\') {
+					openchar = false;
+				} else {
+					;
+				}
+			} else if (d == '\"') {
+				if (comment || multicomment) {
+					;
+				} else if (openchar) {
+					;
+				} else if (!openstring) {
+					openstring = true;
+				} else if (prev != '\\') {
+					openstring = false;
+				} else {
+					;
+				}
+			} else if (d == '/') {
+				if (multicomment) {
+					if (prev == '*') {
+						multicomment = false;
+					}
+				} else if (!comment) {
+					if (prev == '/' && !openstring && !openchar) {
+						comment = true;
+						remove[count-1] = 1;
+					}
+				}
+			} else if (d == '\n') {
+				if (comment) {
+					comment = false;
+				}
+			} else if (d == '*') {
+				if (prev == '/') {
+					if (!multicomment && !openstring && !openchar) {
+						multicomment = true;
+						remove[count-1] = 1;
+					}
+				}
+			}
+			prev = d;
+			if (comment || multicomment) {
+				remove[count] = 1;
+			}
+			count++;
+		}
+		count = 0;
+		String newFile = "";
+		for (int i : remove) {
+			if (i == 0) {
+				newFile += dots[count];
+			}
+			count++;
+		}
+		return newFile;
+	}
+
 	private static String removeComments(File submission) throws Exception {
 		Scanner read = new Scanner(submission);
 		String result = "";
 		while (read.hasNextLine()) { result += read.nextLine() + "\n"; }
-		return CommentParser.removeComments(result);
+		return commentsHelper(result);
 	}
 
 	private static String streamError(Process pro) {
