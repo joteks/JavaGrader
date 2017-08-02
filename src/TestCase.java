@@ -12,6 +12,14 @@ public class TestCase {
 	private int value;
 	private boolean result;
 
+	public TestCase(String name, String message, String category, int value, boolean result) {
+		this.name = name;
+		this.message = message;
+		this.category = category;
+		this.value = value;
+		this.result = result;
+	}
+
 	public String getName() {
 		return name;
 	}
