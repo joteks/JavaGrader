@@ -1,29 +1,29 @@
+
+
 /**
  * Topic 1, Project 1 : AboutMe.java
  * @author AUDREYOTT
  * 
  */
 import java.util.Scanner;
-public class AboutMe {
-  
-    
+public class AboutMeTest {
   
   public String myName() {
-	 "hello";
+	 return "berkel";
   }
   public String mySchool() {
-    hello;
+    return "";
   }
   public int myAge() {
-    return 0
+    return 0;
   }
    public static void main (String[] args) {
-     System.out.println("Hello!")
+     System.out.println("Hello!");
      
-     AboutMe t = new AboutMe();
+     AboutMeTest t = new AboutMeTest();
      
      
-     System.out.println("My name is " +  + ", and I attend " + t.mySchool() +  ". I am " + t.myAge() + " years old." );
+     System.out.println("My name is " + ", and I attend " + t.mySchool() +  ". I am " + t.myAge() + " years old." );
      System.out.println("Thank you!");
    }
 }
