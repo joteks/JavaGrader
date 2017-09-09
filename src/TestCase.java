@@ -23,7 +23,9 @@ public class TestCase {
 	/**
 	* @param name name of test (typically Test 1, Test 2, etc)
 	* @param message message of test, overall description that conveys to student what this test is grading
-	* @param category corresponding Vocareum category () 
+	* @param category corresponding Vocareum category (Ex. Completion, Correctness, Style, etc)
+	* @param value point value of test
+	* @param result true if test should be counted as passed, false if test should be counted as failed 
 	*/
 
 	public TestCase(String name, String message, String category, int value, boolean result) {
@@ -34,6 +36,13 @@ public class TestCase {
 		this.result = result;
 	}
 
+	/**
+	* @param name name of test (typically Test 1, Test 2, etc)
+	* @param message message of test, overall description that conveys to student what this test is grading
+	* @param category corresponding Vocareum category (Ex. Completion, Correctness, Style, etc)
+	* @param value point value of test
+	*/
+
 	public TestCase(String name, String message, String category, int value) {
 		this.name = name;
 		this.message = message;
@@ -42,45 +51,102 @@ public class TestCase {
 		this.result = false;
 	}
 
+	/**
+	* Getter method for name field
+	* @return name of test
+	*/
+
 	public String getName() {
 		return name;
 	}
+
+	/**
+	* Getter method for message field
+	* @return message of test, overall description that conveys to student what this test is grading
+	*/
 
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	* Getter method for category field
+	* @return category corresponding Vocareum category (Ex. Completion, Correctness, Style, etc)
+	*/
+
 	public String getCategory() {
 		return category;
 	}
+
+	/**
+	* Getter method for value field
+	* @return value point value of test
+	*/
 
 	public int getValue() {
 		return value;
 	}
 
+	/**
+	* Getter method for result field
+	* @return result true if test should be counted as passed, false if test should be counted as failed 
+	*/
+
 	public boolean getResult() {
 		return result;
 	}
+
+	/**
+	* Setter method for name field
+	* @param name of test
+	*/
 
 	public void setName(String name) {
 		this.name=name;
 	}
 
+	/**
+	* Setter method for message field
+	* @param message of test, overall description that conveys to student what this test is grading
+	*/
+
 	public void setMessage(String message) {
 		this.message=message;
 	}
+
+	/**
+	* Setter method for category field
+	* @param category corresponding Vocareum category (Ex. Completion, Correctness, Style, etc)
+	*/
 
 	public void setCategory(String category) {
 		this.category=category;
 	}
 
+	/**
+	* Setter method for value field
+	* @param value point value of test
+	*/
+
 	public void setValue(int value) {
 		this.value=value;
 	}
 
+	/**
+	* Setter method for result field
+	* @param result true if test should be counted as passed, false if test should be counted as failed 
+	*/
+
 	public void setResult(boolean result) {
 		this.result=result;
 	}
+
+	/**
+	* Format the result of all tests into a csv-style string that fits Vocareum expection, outputted to a file called gradefile.txt
+	* @param tests Array of tests to push to file
+	* @return true if successfull, false otherwise
+	* @throws Exception any exception
+	*/
 
 	public static boolean pushAll(TestCase[] tests) throws Exception{
 		//Group tests by category
@@ -112,12 +178,31 @@ public class TestCase {
 		return false;
 	}
 
+	/**
+	* Compile the given file
+	* @param submission file to compile
+	* @return true if successful compilation with no errors, false otherwise
+	* @throws Exception any exception
+	*/
+
 	public static boolean compile(File submission) throws Exception {
 		if (submission == null) return false;
 		Process pro = Runtime.getRuntime().exec("javac " + submission.getPath());
 		String error = streamError(pro);
 		return error.length() == 0;
 	}
+
+	/**
+	* Runs the main method of the file given with the input and checks if it matches the regular expression given.
+	* <p>
+	* Only works on files with a main method. Ideally, this should only be run on files whose methods have been replaced but general content was written by intructor.
+	* Does still work for student submission, but calling this method on a raw student submission doesn't fit the intended grading workflow
+	* @param submission work to be run
+	* @param input input given to main method, can be null if no input is needed
+	* @param regex regular expression to match the output with
+	* @return true if file runs successfully and the output matches the regular expression, false otherwise
+	* @throws Exception any exception
+	*/
 
 	public static boolean runMain(File submission, File input, String regex) throws Exception {
 		if (compile(submission)) {

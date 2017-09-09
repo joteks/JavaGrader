@@ -4,6 +4,7 @@
 */
 
 
+
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.comments.*;
@@ -19,11 +20,35 @@ import com.github.javaparser.ast.type.*;
 
 public class Parser {
 
-	List<Comment> comments;
-	List<ConstructorDeclaration> constructors;
-	List<MethodDeclaration> methods;
-	List<FieldDeclaration> fields;
-	List<Problem> problems;
+	/**
+	* All comments found in file parsed by parse method
+	*/
+
+	public List<Comment> comments;
+
+	/**
+	* All constructors found in file parsed by parse method
+	*/
+
+	public List<ConstructorDeclaration> constructors;
+
+	/**
+	* All methods found in file parsed by parse method
+	*/
+
+	public List<MethodDeclaration> methods;
+
+	/**
+	* All fields found in file parsed by parse method
+	*/
+
+	public List<FieldDeclaration> fields;
+
+	/**
+	* All problems (compile-time errors) found in file parsed by parse method
+	*/
+
+	public List<Problem> problems;
 
 	/*
 	* Initializes list fields
@@ -44,6 +69,7 @@ public class Parser {
 	* Not static to avoid needing to parse file data multiple times
 	* @param file the file to parse, data from file will be added to class fields
 	* @return true if at least partial parse was successful
+	* @throws Exception any exception
 	*/
 
 	public boolean parse(String file) throws Exception {
@@ -113,6 +139,7 @@ public class Parser {
 	* @param sigs array of method signatures each in the format returnType MethodName (paramType, paramType, paramType, ... )
 	* @param work path of file to replace with
 	* @return array of new files with replacements, possibly contains null values
+	* @throws Exception any exception
 	*/
 
 	public File[] replace(String[] sigs, String work) throws Exception {
@@ -129,7 +156,7 @@ public class Parser {
 	* <p>
 	* Ending result is a new file with the contents of "file", except now the matching method body is the body from the original parsed file (student submission)
 	* @param signature method signature each in the format returnType MethodName (paramType, paramType, paramType, ... )
-	* @param work path of file to replace with
+	* @param file path of file to replace with
 	* @return array of new files with replacements, possibly contains null values
 	*/
 
@@ -182,6 +209,8 @@ public class Parser {
 	* Expression types are defined in JavaParser project: com.github.javaparser.ast.expr.*
 	* @param method method signature to find statements from, matches format returnType MethodName (paramType, paramType, paramType, ... )
 	* @param exprclass specific Expression class to look for. Ex. MethodCallExpr, BinaryExpr, etc. These Expression types are defined in JavaParser
+	* @return list of expressions that are instances of the class defined by exprclass found in the indicated method
+	* @throws Exception any exception
 	*/
 
 	public List<Expression> findExpressionsOfType(String method, Class exprclass) throws Exception {
@@ -211,6 +240,7 @@ public class Parser {
 	* Helper method (made public for possible future cases) for findExpressionsOfType. Recursive method to find all pieces of an Expression.
 	* @param ex root expression from which to derive all smaller Expressions
 	* @return list of all found Expressions, including all nodes not just leaf nodes
+	* @throws Exception any exception
 	*/
 
 	public List<Expression> getAllExpressions(Expression ex) throws Exception {
