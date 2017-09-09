@@ -1,16 +1,30 @@
+/**
+* @author Robyn Berkel
+* @verison 1.1
+*/
+
+
 import java.lang.reflect.*;
 import java.lang.*;
 import java.util.regex.Pattern;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.nio.file.*;
 
 public class TestCase {
+
 	private String name;
 	private String message;
 	private String category;
 	private int value;
 	private boolean result;
+
+	/**
+	* @param name name of test (typically Test 1, Test 2, etc)
+	* @param message message of test, overall description that conveys to student what this test is grading
+	* @param category corresponding Vocareum category () 
+	*/
 
 	public TestCase(String name, String message, String category, int value, boolean result) {
 		this.name = name;
@@ -18,6 +32,14 @@ public class TestCase {
 		this.category = category;
 		this.value = value;
 		this.result = result;
+	}
+
+	public TestCase(String name, String message, String category, int value) {
+		this.name = name;
+		this.message = message;
+		this.category = category;
+		this.value = value;
+		this.result = false;
 	}
 
 	public String getName() {
@@ -75,10 +97,11 @@ public class TestCase {
 				counts.add(tc.getValue());
 			} else if (!categories.contains(cat)){
 				categories.add(cat);
+				counts.add(tc.getValue());
 			}
-            System.out.print(tc.getMessage() + "\t\t");
-            if (tc.getResult()) System.out.println("Passed");
-            else System.out.println("Failed");
+			String r = "Failed";
+			if (tc.getResult()) r = "Passed";
+            System.out.printf("%-10s\t%-100s\t%s\n", tc.getName(), tc.getMessage(), r);
 		}
         File out = new File("gradefile.txt");
         PrintWriter pw = new PrintWriter(out);
@@ -90,41 +113,31 @@ public class TestCase {
 	}
 
 	public static boolean compile(File submission) throws Exception {
-		Process pro = Runtime.getRuntime().exec("javac "+submission.getPath());
+		if (submission == null) return false;
+		Process pro = Runtime.getRuntime().exec("javac " + submission.getPath());
 		String error = streamError(pro);
-		System.out.println(error);
 		return error.length() == 0;
 	}
 
 	public static boolean runMain(File submission, File input, String regex) throws Exception {
 		if (compile(submission)) {
-			String path = submission.getPath();
-			path = path.substring(0, path.length()-5);
-			String cmd = "java " + path;
-			ProcessBuilder pb = new ProcessBuilder("java", path);
-			pb.redirectInput(input);
-			Process pro = pb.start();
-			pro.waitFor();
-			String output = "heloooooo\nooo";
-			return output.matches(regex);
+			String[] path = submission.getPath().substring(0, submission.getPath().length()-5).split("/");
+			Random r = new Random();
+			File output = new File("temp" + r.nextInt(10000) + ".txt");
+
+			Process p = Runtime.getRuntime().exec("java -cp " + path[0] + " " + path[1]);
+            BufferedReader in = new BufferedReader(
+                                new InputStreamReader(p.getInputStream()));
+            String out = "";
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                out += line + "\n";
+            }
+			return out.matches(regex);
 		}
 		return false;
 	}
 
-	public static boolean runMain(File submission, String input, String regex) throws Exception {
-		PrintWriter out = new PrintWriter("runmaintemp.txt");
-		out.println(input);
-		File f = new File("runmaintemp.txt");
-		boolean result = runMain(submission, f, regex);
-		f.delete();
-		return result;
-
-	}
-
-	public static boolean matchPattern(File submission, String regex) throws Exception {
-		String file = removeComments(submission);
-		return file.matches(regex);
-	}
 
 	private static String commentsHelper(String file) {
 		char[] dots = file.toCharArray();
