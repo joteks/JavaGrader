@@ -14,6 +14,8 @@ import com.github.javaparser.ast.type.*;
 public class Project {
 	public static void main(String[] args) {
 
+		//define tests
+
 		TestCase[] tests = {
 				new TestCase("Test 1", "AboutMe.java compiles", "Correctness", 1),
 				new TestCase("Test 2", "Class header written correctly", "Completion", 1),
@@ -29,6 +31,8 @@ public class Project {
 				new TestCase("Test 12", "mySchool functionality", "Correctness", 1),
 				new TestCase("Test 13", "myAge functionality", "Correctness", 1)
 			};
+
+		//Almost every method throws an exception, just put it all under here
 
 		try {
 			String work = "AboutMe.java";
@@ -67,6 +71,7 @@ public class Project {
 			tests[12].setResult(TestCase.runMain(files[3], null, "(?s).*My age: \\d+.*"));
 
 			List<Expression> exs = parser.findExpressionsOfType("void main(String[])", MethodCallExpr.class);
+
 			for (Expression ex : exs) {
 				if (ex instanceof MethodCallExpr) {
 					MethodCallExpr mx = (MethodCallExpr)ex;
@@ -74,7 +79,7 @@ public class Project {
 					if (name.equals("myAge")) tests[6].setResult(true);
 					if (name.equals("mySchool")) tests[7].setResult(true);
 					if (name.equals("myName")) tests[8].setResult(true);
-					if (name.equals("println") || mx.getName().equals("printf") || mx.getName().equals("print")) 
+					if (name.equals("println") || mx.getName().equals("printf") || mx.getName().equals("print") || mx.getName().equals("write"))
 						tests[9].setResult(true);
 				}
 			}
