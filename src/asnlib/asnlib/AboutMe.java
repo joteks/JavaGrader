@@ -1,5 +1,3 @@
-
-
 /**
  * Topic 1, Project 1 : AboutMe.java
  * @author AUDREYOTT
@@ -9,7 +7,7 @@ import java.util.Scanner;
 public class AboutMe {
   
   public String myName() {
-	 return "test1";
+   return "test1";
   }
   public String mySchool() {
     return "test2";
