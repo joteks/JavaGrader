@@ -1,50 +1,23 @@
-import java.util.Scanner;
 public class AboutMe {
-
- 
-private String myName;
-private String mySchool;
-private int myAge;
- 
- AboutMe(String myName, String mySchool, int myAge){
-  this.myName = myName;
-  this.mySchool = mySchool;
-  this.myAge = myAge;
- }
- 
- 
- public static void main(String[] args) {
    
-  Scanner input = new Scanner(System.in);
+  public String myName() { //method 1 name
+    return "Tyson Freeze";
+  }
   
-  System.out.println("Welcome User: Please enter the information that is asked for");
-      
-  String name = input.nextLine();
+  public String mySchool() { //method 2 school
+    return "Ocean View High School";
+  }
   
-  String school = input.nextLine();
+  public int myAge() { //method 3 age
+    return 16;
+  }
   
-  int age = Integer.parseInt(input.nextLine());
+  public static void main(String[] args){ //execution code
   
-  AboutMe about = new AboutMe(name,school,age);
-      
-  System.out.println("My name is " + about.myName() + ", and I attend " + about.mySchool() + ". I am " + about.myAge()   + " years old.");
-  
-  input.close();
-
- }
- 
- String myName(){
-     return myName;
-   }
-   
-   
-   String mySchool(){
-     return mySchool;
-   }
-   
-   int myAge(){
-     return myAge;
-     
-   }
-
+    //AboutMe am = new AboutMe(); //declare new am object of class AboutMe
+    String name = am.myName(); //string type var myName = return of getName method
+    String school = am.mySchool(); //string type var myName = return of getSchool method
+    int age = am.myAge(); //int type var myAge = return of getAge function
+    System.out.println("My name is "+name+", and I attend "+school+". I am "+age+" years old.");
+  }
 }

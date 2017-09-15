@@ -56,6 +56,7 @@ public class Project {
 			}
 			if (!parsed) {
 				System.out.println("You need to fix the errors listed above before any grading can be done.");
+				TestCase.pushAll(tests);
 				return;
 			}
 
@@ -82,8 +83,7 @@ public class Project {
 
 			//Test for Extra Credit
 
-
-			List<Expression> exs = parser.findExpressionsOfType("void main(String[])", MethodCallExpr.class);
+			List<Expression> exs = parser.findExpressionsOfType("void main(String[])");
 
 			for (Expression ex : exs) {
 				if (ex instanceof MethodCallExpr) {
@@ -94,14 +94,11 @@ public class Project {
 					if (name.equals("myName")) tests[9].setResult(true);
 					if (name.equals("println") || mx.getName().equals("printf") || mx.getName().equals("print") || mx.getName().equals("write"))
 						tests[10].setResult(true);
-				}
-			}
-
-			for (Expression ex : exs) {
-				if (ex instanceof ObjectCreationExpr) {
-					ObjectCreationExpr ox = (ObjectCreationExpr)ex;
-					ClassOrInterfaceType c = ox.getType();
-					if (c.getName().asString().equals("AboutMe")) tests[11].setResult(true);
+				} else if (ex instanceof ObjectCreationExpr) {
+					ObjectCreationExpr oce = (ObjectCreationExpr)ex;
+					if (oce.getType().getName().asString().equals("AboutMe")) {
+						tests[11].setResult(true);
+					}
 				}
 			}
 

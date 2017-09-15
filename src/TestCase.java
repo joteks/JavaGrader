@@ -163,7 +163,7 @@ public class TestCase {
 				counts.add(tc.getValue());
 			} else if (!categories.contains(cat)){
 				categories.add(cat);
-				counts.add(tc.getValue());
+				counts.add(0);
 			}
 			String r = "Failed";
 			if (tc.getResult()) r = "Passed";

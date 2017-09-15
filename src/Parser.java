@@ -109,6 +109,7 @@ public class Parser {
 	*/
 
 	public String reportProblems() {
+		System.out.println("check3");
 		String result = "Compile-time errors were found at these locations:";
 		for (Problem p : problems) {
 			if (p.getLocation().isPresent()) {
@@ -207,12 +208,11 @@ public class Parser {
 	* <p>
 	* Expression types are defined in JavaParser project: com.github.javaparser.ast.expr.*
 	* @param method method signature to find statements from, matches format returnType MethodName (paramType, paramType, paramType, ... )
-	* @param exprclass specific Expression class to look for. Ex. MethodCallExpr, BinaryExpr, etc. These Expression types are defined in JavaParser
 	* @return list of expressions that are instances of the class defined by exprclass found in the indicated method
 	* @throws Exception any exception
 	*/
 
-	public List<Expression> findExpressionsOfType(String method, Class exprclass) throws Exception {
+	public List<Expression> findExpressionsOfType(String method) throws Exception {
 		for (MethodDeclaration m : methods) {
 			if (m.getDeclarationAsString(false, false, false).equals(method)) {
 				//find the statement
@@ -223,9 +223,7 @@ public class Parser {
 						Expression e = ((ExpressionStmt)s).getExpression();
 						List<Expression> list = getAllExpressions(e);
 						for (Expression x : list) {
-							if (exprclass.isInstance(x)) {
-								expressions.add(x);
-							}
+							expressions.add(x);
 						}
 					}
 				}
@@ -343,6 +341,17 @@ public class Parser {
 		}
 		else if (ex instanceof VariableDeclarationExpr) {
 			VariableDeclarationExpr ae = (VariableDeclarationExpr)ex;
+			List<NodeList<?>> node = ae.getNodeLists();
+			for (NodeList<?> n : node) {
+				if (n.size() > 0) {
+					if (n.get(0) instanceof VariableDeclarator) {
+						VariableDeclarator vd = (VariableDeclarator)n.get(0);
+						if (vd.getInitializer().isPresent()) {
+							e.addAll(getAllExpressions(vd.getInitializer().get()));
+						}
+					}
+				}
+			}
 			NodeList<AnnotationExpr> exs = ae.getAnnotations();
 			for (AnnotationExpr s : exs) {
 				e.addAll(getAllExpressions(s));
